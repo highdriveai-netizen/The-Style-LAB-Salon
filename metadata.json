@@ -1,0 +1,6 @@
+{
+  "name": "The Style Lab",
+  "description": "Discover The Style Lab in Chattogram — a premier modern men's salon and grooming lounge offering precision haircuts, beard sculpting, and luxury grooming.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
