@@ -17,20 +17,37 @@ interface ContactLocationProps {
 
 export const ContactLocation: React.FC<ContactLocationProps> = ({ onOpenBooking }) => {
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phone) return;
-    setFormSubmitted(true);
-    setTimeout(() => {
-      setFormSubmitted(false);
-      setName('');
-      setPhone('');
-      setMessage('');
-    }, 4000);
+    setIsSubmitting(true);
+    try {
+      await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          phone,
+          message,
+        }),
+      });
+    } catch {
+      // In case of offline or fallback, proceed to confirmation
+    } finally {
+      setIsSubmitting(false);
+      setFormSubmitted(true);
+      setTimeout(() => {
+        setFormSubmitted(false);
+        setName('');
+        setPhone('');
+        setMessage('');
+      }, 4000);
+    }
   };
 
   return (
@@ -293,10 +310,11 @@ export const ContactLocation: React.FC<ContactLocationProps> = ({ onOpenBooking 
                   <button
                     id="inquiry-submit-btn"
                     type="submit"
-                    className="w-full sm:w-auto px-6 py-3 bg-[#1C1917] hover:bg-[#292524] text-[#FAF8F5] text-xs font-semibold uppercase tracking-widest rounded-xs transition-colors flex items-center justify-center space-x-2 cursor-pointer shadow-xs"
+                    disabled={isSubmitting}
+                    className="w-full sm:w-auto px-6 py-3 bg-[#1C1917] hover:bg-[#292524] disabled:opacity-70 text-[#FAF8F5] text-xs font-semibold uppercase tracking-widest rounded-xs transition-colors flex items-center justify-center space-x-2 cursor-pointer disabled:cursor-not-allowed shadow-xs"
                   >
                     <Send className="w-3.5 h-3.5 text-[#C5A059]" />
-                    <span>Send Inquiry</span>
+                    <span>{isSubmitting ? 'Sending...' : 'Send Inquiry'}</span>
                   </button>
                 </form>
               )}
